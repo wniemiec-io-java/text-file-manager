@@ -9,6 +9,7 @@ package wniemiec.io.java;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -43,11 +44,13 @@ public class TextFileManager {
 	 * @throws		IllegalArgumentException If textFile or file encoding is null
 	 */
 	public TextFileManager(Path textFile, Charset fileEncoding) {
-		if (textFile == null)
+		if (textFile == null) {
 			throw new IllegalArgumentException("Text file cannot be null");
+		}
 		
-		if (fileEncoding == null)
+		if (fileEncoding == null) {
 			throw new IllegalArgumentException("File encoding cannot be null");
+		}
 		
 		this.textFile = textFile;
 		this.fileEncoding = fileEncoding;
@@ -63,6 +66,7 @@ public class TextFileManager {
 	 * @return		List containing all lines of the file
 	 * 
 	 * @throws		IOException If an I/O error occurs opening the file
+	 * @throws		IllegalStateException If file does not exist
 	 */
 	public List<String> readLines() throws IOException {
 		List<String> lines = new ArrayList<>();
@@ -78,6 +82,10 @@ public class TextFileManager {
 	}
 
 	private BufferedReader buildBufferReader() throws IOException {
+		if (!Files.exists(textFile)) {
+			throw new IllegalStateException("Cannot read from a non-existent file");
+		}
+
 		return Files.newBufferedReader(textFile, fileEncoding);
 	}
 	
@@ -90,10 +98,11 @@ public class TextFileManager {
 	 * @throws		IllegalArgumentException If lines is null
 	 */
 	public void writeLines(List<String> lines) throws IOException {
-		if (lines == null)
+		if (lines == null) {
 			throw new IllegalArgumentException("Lines cannot be null");
+		}
 		
-			setUpOutput();
+		setUpOutput();
 		
 		try (BufferedWriter buffer = buildBufferWriter()) {
 			for (String line : lines) {
@@ -115,4 +124,35 @@ public class TextFileManager {
 
 		return Files.newBufferedWriter(textFile, fileEncoding, options);
 	}
+
+	/**
+	 * Searches for a line that contains a sequence.
+	 * 
+	 * @param		sequence Sequence to be searched
+	 * 
+	 * @return		First line that contains the sequence or null if there is 
+	 * no line with such sequence
+	 * 
+	 * @throws		IOException If an I/O error occurs while reading the file
+	 * @throws		IllegalArgumentException If sequence is null
+	 * @throws		IllegalStateException If file does not exist
+	 */
+	public String getFileLineThatContains(CharSequence sequence) throws IOException {
+		if (sequence == null) {
+			throw new IllegalArgumentException("Sequence cannot be null");
+		}
+
+        String targetLine = null;
+
+        try (BufferedReader buffer = buildBufferReader()) {
+            for(String line = buffer.readLine(); line != null; line = buffer.readLine()) {
+                if (line.contains(sequence)) {
+                    targetLine = line;
+                    break;
+                }
+            }
+        }
+
+        return targetLine;
+    }
 }

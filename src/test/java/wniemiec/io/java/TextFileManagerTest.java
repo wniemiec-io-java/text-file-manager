@@ -16,8 +16,8 @@ public class TextFileManagerTest {
 	//-------------------------------------------------------------------------
 	//		Attributes
 	//-------------------------------------------------------------------------
-	private static Path txtFile;
-	private static List<String> content;
+	private static final Path txtFile;
+	private static final List<String> content;
 	
 	
 	//-------------------------------------------------------------------------
@@ -68,5 +68,29 @@ public class TextFileManagerTest {
 	public void testWriteNullLines() throws IOException {
 		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
 		txtManager.writeLines(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetFileLineThatContainsNull() throws IOException {
+		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
+
+		txtManager.writeLines(content);
+		txtManager.getFileLineThatContains(null);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testGetFileLineThatContainsSomethingUSingFalsePath() 
+	throws IOException {
+		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
+
+		txtManager.getFileLineThatContains("hello");
+	}
+
+	@Test
+	public void testGetFileLineThatContainsSomething() throws IOException {
+		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
+
+		txtManager.writeLines(content);
+		txtManager.getFileLineThatContains("hello");
 	}
 }
