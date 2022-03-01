@@ -18,6 +18,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Responsible for handling text files.
  */
@@ -26,8 +27,8 @@ public class TextFileManager {
 	//-------------------------------------------------------------------------
 	//		Attributes
 	//-------------------------------------------------------------------------
-	private Path textFile;
-	private Charset fileEncoding;
+	private final Path textFile;
+	private final Charset fileEncoding;
 	
 	
 	//-------------------------------------------------------------------------
@@ -67,13 +68,17 @@ public class TextFileManager {
 		List<String> lines = new ArrayList<>();
 		String currentLine;
 		
-		try (BufferedReader br = Files.newBufferedReader(textFile, fileEncoding)) {
-			while ((currentLine = br.readLine()) != null) {
+		try (BufferedReader buffer = buildBufferReader()) {
+			while ((currentLine = buffer.readLine()) != null) {
 				lines.add(currentLine);
 			}
 		}
 		
 		return lines;
+	}
+
+	private BufferedReader buildBufferReader() throws IOException {
+		return Files.newBufferedReader(textFile, fileEncoding);
 	}
 	
 	/**
@@ -88,18 +93,26 @@ public class TextFileManager {
 		if (lines == null)
 			throw new IllegalArgumentException("Lines cannot be null");
 		
-		OpenOption[] options = {
-				StandardOpenOption.CREATE
-		};
+			setUpOutput();
 		
-		Files.deleteIfExists(textFile);
-		Files.createDirectories(textFile.getParent());
-		
-		try (BufferedWriter bw = Files.newBufferedWriter(textFile, fileEncoding, options)) {
+		try (BufferedWriter buffer = buildBufferWriter()) {
 			for (String line : lines) {
-				bw.write(line.replaceAll("\\n", ""));
-				bw.newLine();
+				buffer.write(line.replace("\\n", ""));
+				buffer.newLine();
 			}
 		}
+	}
+
+	private void setUpOutput() throws IOException {
+		Files.deleteIfExists(textFile);
+		Files.createDirectories(textFile.getParent());
+	}
+
+	private BufferedWriter buildBufferWriter() throws IOException {
+		OpenOption[] options = {
+			StandardOpenOption.CREATE
+	};
+
+		return Files.newBufferedWriter(textFile, fileEncoding, options);
 	}
 }

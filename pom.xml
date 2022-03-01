@@ -3,10 +3,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>wniemiec.io.java</groupId>
+  <groupId>io.github.wniemiec-io-java</groupId>
   <artifactId>text-file-manager</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 
   <name>TextFileManager</name>
   <description>Read and write text files.</description>
@@ -34,16 +33,19 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:wniemiec-io-java/text-file-manager.git</connection>
-    <developerConnection>scm:git:ssh://github.com:wniemiec-io-java/text-file-manager.git</developerConnection>
-    <url>https://github.com/wniemiec-io-java/text-file-manager/tree/main</url>
+    <connection>scm:git:git@github.com:wniemiec-io-java/consolex.git</connection>
+    <developerConnection>scm:git:ssh://github.com:wniemiec-io-java/consolex.git</developerConnection>
+    <url>https://github.com/wniemiec-io-java/consolex/tree/main</url>
   </scm>
 
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
     <repository>
-      <id>github-wniemiec-io-java</id>
-      <name>GitHub wniemiec-io-java Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/wniemiec-io-java/text-file-manager</url>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
   </distributionManagement>
   
@@ -99,7 +101,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.0.2</version>
         <configuration>
-          <outputDirectory>${project.build.directory}/../dist/${version.major}.x</outputDirectory>
+          <outputDirectory>${project.baseDir}/../dist/${version.major}.x</outputDirectory>
         </configuration>
       </plugin>
 
