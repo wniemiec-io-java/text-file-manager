@@ -1,23 +1,24 @@
 package wniemiec.io.java;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
 
-public class TextFileManagerTest {
+class TextFileManagerTest {
 	
 	//-------------------------------------------------------------------------
 	//		Attributes
 	//-------------------------------------------------------------------------
-	private static final Path txtFile;
-	private static final List<String> content;
+	private static final Path TXT_FILE;
+	private static final List<String> TXT_FILE_CONTENT;
+	private static final Charset TXT_FILE_CHARSET;
 	
 	
 	//-------------------------------------------------------------------------
@@ -26,18 +27,18 @@ public class TextFileManagerTest {
 	static {
 		Path tmpDir = Path.of(System.getProperty("java.io.tmpdir"));
 		
-		txtFile = tmpDir.resolve("txt-tmp-file.txt");
-		
-		content = List.of("hello", "world!");
+		TXT_FILE = tmpDir.resolve("txt-tmp-file.txt");
+		TXT_FILE_CONTENT = List.of("hello", "world!");
+		TXT_FILE_CHARSET = StandardCharsets.ISO_8859_1;
 	}
 	
 	
 	//-------------------------------------------------------------------------
 	//		Test hooks
 	//-------------------------------------------------------------------------
-	@Before
-	public void beforeEachTest() throws IOException {
-		Files.deleteIfExists(txtFile);
+	@BeforeEach
+	void beforeEachTest() throws IOException {
+		Files.deleteIfExists(TXT_FILE);
 	}
 	
 	
@@ -45,52 +46,64 @@ public class TextFileManagerTest {
 	//		Tests
 	//-------------------------------------------------------------------------|
 	@Test
-	public void testWriteAndRead() throws IOException {
-		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
-		txtManager.writeLines(content);
+	void testWriteAndRead() throws IOException {
+		TextFileManager txtManager = new TextFileManager(TXT_FILE, TXT_FILE_CHARSET);
 		
-		List<String> fileContent = txtManager.readLines();
-		
-		assertEquals(content, fileContent);
+		txtManager.writeLines(TXT_FILE_CONTENT);
+				
+		Assertions.assertEquals(TXT_FILE_CONTENT, txtManager.readLines());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorWithNullFile() {
-		new TextFileManager(null, StandardCharsets.ISO_8859_1);
+	@Test
+	void testConstructorWithNullFile() {
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			new TextFileManager(null, TXT_FILE_CHARSET);
+		});
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorWithNullEncoding() {
-		new TextFileManager(txtFile, null);
+	@Test
+	void testConstructorWithNullEncoding() {
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			new TextFileManager(TXT_FILE, null);
+		});
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testWriteNullLines() throws IOException {
-		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
-		txtManager.writeLines(null);
-	}
+	@Test
+	void testWriteNullLines() throws IOException {
+		TextFileManager txtManager = new TextFileManager(TXT_FILE, TXT_FILE_CHARSET);
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetFileLineThatContainsNull() throws IOException {
-		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
-
-		txtManager.writeLines(content);
-		txtManager.getFileLineThatContains(null);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testGetFileLineThatContainsSomethingUSingFalsePath() 
-	throws IOException {
-		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
-
-		txtManager.getFileLineThatContains("hello");
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			txtManager.writeLines(null);
+		});
 	}
 
 	@Test
-	public void testGetFileLineThatContainsSomething() throws IOException {
-		TextFileManager txtManager = new TextFileManager(txtFile, StandardCharsets.ISO_8859_1);
+	void testGetFileLineThatContainsNull() throws IOException {
+		TextFileManager txtManager = new TextFileManager(TXT_FILE, TXT_FILE_CHARSET);
 
-		txtManager.writeLines(content);
-		txtManager.getFileLineThatContains("hello");
+		txtManager.writeLines(TXT_FILE_CONTENT);
+
+		Assertions.assertThrows(IllegalArgumentException.class, () -> {
+			txtManager.getFileLineThatContains(null);
+		});
+	}
+
+	@Test
+	void testGetFileLineThatContainsSomethingUsingFalsePath() 
+	throws IOException {
+		TextFileManager txtManager = new TextFileManager(TXT_FILE, TXT_FILE_CHARSET);
+
+		Assertions.assertThrows(IllegalStateException.class, () -> {
+			txtManager.getFileLineThatContains("hello");
+		});
+	}
+
+	@Test
+	void testGetFileLineThatContainsSomething() throws IOException {
+		TextFileManager txtManager = new TextFileManager(TXT_FILE, TXT_FILE_CHARSET);
+
+		txtManager.writeLines(TXT_FILE_CONTENT);
+		
+		Assertions.assertEquals("hello", txtManager.getFileLineThatContains("hello"));
 	}
 }
