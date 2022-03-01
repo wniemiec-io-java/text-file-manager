@@ -19,19 +19,10 @@ Text File Manager performs operations with text files simply and easily.
 ## ❓ How to use
 1. Add one of the options below to the pom.xml file: 
 
-#### Using Maven Central (recomended):
+#### Using Maven Central:
 ```
 <dependency>
   <groupId>io.github.wniemiec-io-java</groupId>
-  <artifactId>text-file-manager</artifactId>
-  <version>LATEST</version>
-</dependency>
-```
-
-#### Using GitHub Packages:
-```
-<dependency>
-  <groupId>wniemiec.io.java</groupId>
   <artifactId>text-file-manager</artifactId>
   <version>LATEST</version>
 </dependency>
@@ -67,6 +58,7 @@ System.out.println( txtFileManager.readLines() );
 |----------------|-------------------------------|-----|------------------------|--------|
 |readLines |`void`|`List<String>`|Gets all lines from a file and puts them in a list| - |
 |writeLines |`lines: List<String>`|`void`|Writes all items in a string list to a file| - |
+|getFileLineThatContains |`sequence: CharSequence`|`String`|Searches for a line that contains a sequence| - |
 
 ## 🚩 Changelog
 Details about each version are documented in the [releases section](https://github.com/williamniemiec/wniemiec-io-java/text-file-manager/releases).
